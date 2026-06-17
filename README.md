@@ -2,7 +2,7 @@
 
 A cross-platform video feed application that mimics TikTok's interface. Displays videos from categorized folders with smart recommendations, watch-time tracking, and adaptive content suggestions.
 
-## ðŸŽ¯ Features
+## 🎯 Features
 
 - **TikTok-like Interface**: Vertical scroll video feed with smooth playback
 - **Smart Recommendations**: AI-powered video suggestions based on watch history
@@ -12,7 +12,7 @@ A cross-platform video feed application that mimics TikTok's interface. Displays
 - **Persistent State**: Remembers recent videos and user behavior across sessions
 - **Audio Control**: Global and per-video audio management with user gesture handling
 
-## ðŸ“‹ System Requirements
+## 📋 System Requirements
 
 - **Node.js**: v14+ (for server and build tools)
 - **Python**: v3.7+ (for video categorization script)
@@ -24,12 +24,14 @@ A cross-platform video feed application that mimics TikTok's interface. Displays
 Arcinity includes an advanced deep learning processor that automatically indexes your entire video library with speech transcription, visual embeddings, and audio feature extraction.
 
 ### What It Indexes
+
 - **Speech Transcription**: Extracts and transcribes all audio (Whisper)
 - **Visual Features**: Generates 512-dim CLIP embeddings for visual similarity
 - **Audio Features**: Analyzes spectral, tempo, energy, and MFCC coefficients
 - **Smart Skipping**: Auto-skips transcription for videos <5 seconds
 
 ### Performance Estimates
+
 - **GPU (RTX 5070)**: 6-8 hours for 14,000 videos (Balanced preset, all optimizations)
 - **GPU (RTX 3050)**: 15-20 hours for 14,000 videos
 - **CPU (8-core)**: 40-60 hours for 14,000 videos
@@ -39,7 +41,7 @@ Arcinity includes an advanced deep learning processor that automatically indexes
 
 ## Python Dependencies (Deep Learning)
 
-## ðŸš€ Quick Start
+## 🚀 Quick Start
 
 ### 1. Install Node Dependencies
 
@@ -95,7 +97,7 @@ npm start
 
 The application will be available at `http://localhost:3000`
 
-## ðŸªŸ Build Windows EXE
+## 🪟 Build Windows EXE
 
 Create an installable Windows executable:
 
@@ -107,7 +109,7 @@ Output files are generated in `dist/`, including:
 - `dist/Arcinity Setup 1.0.0.exe`
 - `dist/win-unpacked/Arcinity.exe`
 
-## ðŸŽ Build macOS DMG
+## 🍎 Build macOS DMG
 
 Run on a macOS machine:
 
@@ -115,7 +117,7 @@ Run on a macOS machine:
 npm run build:dmg
 ```
 
-## ðŸ§ Build Linux Flatpak
+## 🐧 Build Linux Flatpak
 
 Run on a Linux machine with Flatpak tooling installed.
 
@@ -142,41 +144,41 @@ npm run bundle:flatpak
 Output bundle:
 - `dist/Arcinity.flatpak`
 
-## ðŸ“ Directory Structure
+## 📁 Directory Structure
 
 ```
 .
-â”œâ”€â”€ config.js                      # Cross-platform configuration
-â”œâ”€â”€ server.js                      # Express server and API
-â”œâ”€â”€ app.js                         # Frontend JavaScript (TikTok-like UI)
-â”œâ”€â”€ recommender.js                 # Recommendation engine
-â”œâ”€â”€ catagorize.py                  # Video clustering and organization
-â”œâ”€â”€ index.html                     # Frontend HTML
-â”œâ”€â”€ styles.css                     # UI styling
-â”œâ”€â”€ package.json                   # Node dependencies
-â”œâ”€â”€ electron/
-â”‚   â”œâ”€â”€ main.js                    # Electron main process (launcher backend)
-â”‚   â”œâ”€â”€ preload.js                 # Secure bridge for renderer IPC
-â”‚   â”œâ”€â”€ renderer.html              # Launcher UI
-â”‚   â”œâ”€â”€ renderer.css               # Launcher styling
-â”‚   â””â”€â”€ renderer.js                # Launcher UI logic
-â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ behavior.json              # User watch history (auto-created)
-â”‚   â””â”€â”€ recent.json                # Recent videos (auto-created)
-â”œâ”€â”€ scripts/
-â”‚   â”œâ”€â”€ extract_audio_features.py  # Audio analysis
-â”‚   â””â”€â”€ extract_visual_features.py # Visual analysis
-â”œâ”€â”€ flatpak/
-â”‚   â”œâ”€â”€ com.arcinity.launcher.yml  # Flatpak manifest
-â”‚   â”œâ”€â”€ com.arcinity.launcher.desktop
-â”‚   â”œâ”€â”€ com.arcinity.launcher.metainfo.xml
-â”‚   â”œâ”€â”€ com.arcinity.launcher.svg
-â”‚   â””â”€â”€ run-arcinity.sh            # Flatpak entrypoint wrapper
-â””â”€â”€ thumbs/                        # Cached video thumbnails
-    â””â”€â”€ [category folders]/
+├── config.js                      # Cross-platform configuration
+├── server.js                      # Express server and API
+├── app.js                         # Frontend JavaScript (TikTok-like UI)
+├── recommender.js                 # Recommendation engine
+├── catagorize.py                  # Video clustering and organization
+├── index.html                     # Frontend HTML
+├── styles.css                     # UI styling
+├── package.json                   # Node dependencies
+├── electron/
+│   ├── main.js                    # Electron main process (launcher backend)
+│   ├── preload.js                 # Secure bridge for renderer IPC
+│   ├── renderer.html              # Launcher UI
+│   ├── renderer.css               # Launcher styling
+│   └── renderer.js                # Launcher UI logic
+├── data/
+│   ├── behavior.json              # User watch history (auto-created)
+│   └── recent.json                # Recent videos (auto-created)
+├── scripts/
+│   ├── extract_audio_features.py  # Audio analysis
+│   └── extract_visual_features.py # Visual analysis
+├── flatpak/
+│   ├── com.arcinity.launcher.yml  # Flatpak manifest
+│   ├── com.arcinity.launcher.desktop
+│   ├── com.arcinity.launcher.metainfo.xml
+│   ├── com.arcinity.launcher.svg
+│   └── run-arcinity.sh            # Flatpak entrypoint wrapper
+└── thumbs/                        # Cached video thumbnails
+    └── [category folders]/
 ```
 
-## âš™ï¸ Configuration Guide
+## ⚙️ Configuration Guide
 
 ### config.js Setup
 
@@ -217,7 +219,7 @@ export MIXED_VIDEOS_DIR=/Users/YourName/Videos/new
 npm start
 ```
 
-## ðŸŽ¬ Video Organization
+## 🎬 Video Organization
 
 ### Method 1: Manual Organization
 
@@ -225,15 +227,15 @@ Organize videos into category folders:
 
 ```
 categorized_videos/
-â”œâ”€â”€ Luxury/
-â”‚   â”œâ”€â”€ video1.mp4
-â”‚   â”œâ”€â”€ video2.mp4
-â”‚   â””â”€â”€ video3.mp4
-â”œâ”€â”€ Nature/
-â”‚   â”œâ”€â”€ clip1.mp4
-â”‚   â””â”€â”€ clip2.webm
-â””â”€â”€ Travel/
-    â””â”€â”€ adventure.mov
+├── Luxury/
+│   ├── video1.mp4
+│   ├── video2.mp4
+│   └── video3.mp4
+├── Nature/
+│   ├── clip1.mp4
+│   └── clip2.webm
+└── Travel/
+    └── adventure.mov
 ```
 
 Then set `VIDEO_SOURCE_DIR` to this directory.
@@ -260,7 +262,7 @@ export VIDEO_SOURCE_DIR="/path/to/output/categories"
 python catagorize.py
 ```
 
-## ðŸ”Œ API Reference
+## 🔌 API Reference
 
 ### GET /api/posts
 
@@ -304,7 +306,7 @@ Record user interactions (watch time, likes).
 { "ok": true }
 ```
 
-## ðŸ“Š Understanding the Recommendation System
+## 📊 Understanding the Recommendation System
 
 The recommendation engine analyzes:
 
@@ -320,7 +322,7 @@ Videos are clustered and ranked based on:
 - User engagement patterns
 - Recency and diversity
 
-## ðŸ› ï¸ Development
+## 🛠️ Development
 
 ### Running with Auto-Reload
 
@@ -350,18 +352,18 @@ DEBUG=Arcinity:* npm start
 - **Batched Tracking**: User interactions batched and sent periodically
 - **In-Memory Caching**: File lists cached with 30-second refresh
 
-## ðŸ“ File Format Support
+## 📝 File Format Support
 
 - **Video**: `.mp4`, `.mov`, `.webm`, `.mkv`, `.avi`
 - **Thumbnails**: Auto-generated as `.webp` by ffmpeg
 
-## ðŸ”’ Data Privacy
+## 🔒 Data Privacy
 
 - **User Data**: Stored locally in `data/` folder (JSON files)
 - **Behavior Tracking**: Never sent externally, only stored locally
 - **Recent Queue**: Limited to 50 entries to prevent unbounded growth
 
-## ðŸ› Troubleshooting
+## 🐛 Troubleshooting
 
 ### "No videos found" Error
 
@@ -370,14 +372,14 @@ DEBUG=Arcinity:* npm start
 3. Ensure videos are in subdirectories (categories)
 
 ```javascript
-// âœ… Correct structure
+// ✅ Correct structure
 categorized_videos/
-  â””â”€â”€ Category1/
-      â””â”€â”€ video.mp4
+  └── Category1/
+      └── video.mp4
 
-// âŒ Incorrect (videos in root)
+// ❌ Incorrect (videos in root)
 categorized_videos/
-  â””â”€â”€ video.mp4
+  └── video.mp4
 ```
 
 ### Server Won't Start
@@ -415,7 +417,7 @@ python --version  # Should be 3.7+
 python -c "import os; print(os.path.exists('/path/to/videos'))"
 ```
 
-## ðŸŽ¨ Customization
+## 🎨 Customization
 
 ### Styling
 
@@ -440,11 +442,11 @@ Edit `recommender.js` to tune:
 - Similarity thresholds
 - Clustering parameters
 
-## ðŸ“„ License
+## 📄 License
 
 This project is provided as-is for personal use.
 
-## ðŸ¤ Contributing
+## 🤝 Contributing
 
 Feel free to extend this project:
 
@@ -454,7 +456,7 @@ Feel free to extend this project:
 - Add database persistence
 - Integrate cloud storage (S3, Google Drive, etc.)
 
-## ðŸ“š Additional Resources
+## 📚 Additional Resources
 
 - [Express.js Documentation](https://expressjs.com/)
 - [scikit-learn KMeans](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)
@@ -465,5 +467,3 @@ Feel free to extend this project:
 
 **Last Updated**: January 2026
 **Tested On**: Windows, macOS, Linux
-
-
