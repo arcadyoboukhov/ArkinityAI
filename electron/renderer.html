@@ -1,0 +1,474 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arcinity Launcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="renderer.css">
+</head>
+<body>
+  <div class="custom-titlebar">
+    <div class="titlebar-brand">
+      <span class="titlebar-dot" aria-hidden="true"></span>
+      <span class="titlebar-title">Arcinity Launcher</span>
+    </div>
+    <div class="titlebar-controls" role="group" aria-label="Window controls">
+      <button id="window-minimize" class="titlebar-btn titlebar-btn-min" title="Minimize" aria-label="Minimize">—</button>
+      <button id="window-maximize" class="titlebar-btn titlebar-btn-max" title="Maximize" aria-label="Maximize">□</button>
+      <button id="window-close" class="titlebar-btn titlebar-btn-close" title="Close" aria-label="Close">✕</button>
+    </div>
+  </div>
+
+  <div class="bg-glow bg-glow-a"></div>
+  <div class="bg-glow bg-glow-b"></div>
+
+  <main class="shell">
+
+    <!-- ── Header ──────────────────────────────────────────── -->
+    <header class="hero">
+      <div class="hero-left">
+        <p class="eyebrow">DESKTOP CONTROL PANEL</p>
+        <h1>Arcinity Launcher</h1>
+        <p class="sub">Choose a video library, set your port, and control the server from one place.</p>
+        <div id="trial-hero-banner" class="trial-banner" style="display:none">
+          <div>
+            <strong>Start your 7-day Arcinity Pro trial</strong>
+            <p>Unlock Pro Subscription Features now. You will be billed after 7 days unless you cancel.</p>
+          </div>
+          <button id="trial-hero-cta" class="btn btn-primary">Start Free Trial</button>
+        </div>
+      </div>
+      <div class="auth-corner">
+        <div id="auth-signed-out">
+          <button id="signin-btn" class="btn btn-auth">Sign In / Sign Up</button>
+        </div>
+        <div id="auth-signed-in" style="display:none">
+          <div class="user-badge">
+            <div class="user-avatar-circle">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <span id="auth-email-label" class="user-email"></span>
+          </div>
+          <button id="signout-btn" class="btn btn-auth-out">Sign Out</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Tab Navigation ──────────────────────────────────── -->
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" data-tab="home" role="tab" aria-selected="true">Home</button>
+      <button class="tab-btn" data-tab="account" id="tab-btn-account" role="tab" aria-selected="false" disabled>
+        <svg class="lock-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Account
+      </button>
+      <button class="tab-btn" data-tab="pro" id="tab-btn-pro" role="tab" aria-selected="false" disabled>
+        <svg class="lock-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Pro Subscription Features
+      </button>
+    </nav>
+
+    <!-- ── Tab: Home ───────────────────────────────────────── -->
+    <div id="tab-home" class="tab-panel">
+      <section class="panel thumbs-panel">
+        <div class="thumbs-header-row">
+          <div>
+            <h2 class="thumbs-title">Thumbnails</h2>
+            <p class="thumbs-sub">Pre-generate thumbnails once so videos appear instantly — zero black screens during scroll.</p>
+          </div>
+          <div id="thumbs-status-pill" class="thumbs-pill thumbs-unknown">Not Scanned</div>
+        </div>
+
+        <div id="thumbs-stats" class="thumbs-stats" style="display:none">
+          <div class="thumbs-stat">
+            <span class="thumbs-stat-num" id="thumbs-total">0</span>
+            <span class="thumbs-stat-label">Videos Found</span>
+          </div>
+          <div class="thumbs-stat-sep"></div>
+          <div class="thumbs-stat">
+            <span class="thumbs-stat-num thumbs-num-good" id="thumbs-existing">0</span>
+            <span class="thumbs-stat-label">Already Ready</span>
+          </div>
+          <div class="thumbs-stat-sep"></div>
+          <div class="thumbs-stat">
+            <span class="thumbs-stat-num thumbs-num-warn" id="thumbs-missing">0</span>
+            <span class="thumbs-stat-label">Missing</span>
+          </div>
+        </div>
+
+        <div id="thumbs-progress-wrap" class="thumbs-progress-wrap" style="display:none">
+          <div class="thumbs-bar-bg">
+            <div id="thumbs-progress-bar" class="thumbs-bar-fill" style="width:0%"></div>
+          </div>
+          <p id="thumbs-progress-text" class="thumbs-progress-text">Preparing&hellip;</p>
+        </div>
+
+        <div class="thumbs-actions">
+          <button id="generate-thumbs-btn" class="btn btn-primary" disabled>Scan Folder First</button>
+          <button id="cancel-thumbs-btn" class="btn btn-danger" style="display:none">Cancel</button>
+        </div>
+        <p id="thumbs-message" class="message" aria-live="polite" style="margin-top:6px;min-height:1.2em"></p>
+      </section>
+
+      <section class="panel control-panel">
+        <div class="row">
+          <label for="video-folder">Video Folder</label>
+          <div class="field-group">
+            <input id="video-folder" type="text" placeholder="Select a folder..." readonly>
+            <button id="browse-folder" class="btn btn-secondary">Browse</button>
+          </div>
+        </div>
+
+        <div class="row two-col">
+          <div>
+            <label for="port">Port</label>
+            <input id="port" type="number" min="1" max="65535" value="3000">
+          </div>
+          <div>
+            <label>Server Status</label>
+            <div id="status-pill" class="status-pill stopped">Stopped</div>
+          </div>
+        </div>
+
+        <div class="row two-col">
+          <div>
+            <label>Algorithm Mode</label>
+            <div id="algo-mode-pill" class="algo-mode-pill regular">Regular (Pseudo Features)</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="start-btn" class="btn btn-primary" style="display:none">Start Server</button>
+          <button id="stop-btn" class="btn btn-danger" disabled>Stop Server</button>
+          <button id="open-app-btn" class="btn btn-ghost" disabled>Open App</button>
+        </div>
+
+        <p id="message" class="message" aria-live="polite"></p>
+      </section>
+
+      <section class="panel log-panel">
+        <div class="log-head">
+          <h2>Live Server Logs</h2>
+          <button id="clear-logs" class="btn btn-minor">Clear</button>
+        </div>
+        <pre id="logs" class="logs" aria-live="polite"></pre>
+      </section>
+    </div>
+
+    <!-- ── Tab: Account ────────────────────────────────────── -->
+    <div id="tab-account" class="tab-panel" style="display:none">
+      <section class="panel account-panel">
+        <div class="account-header">
+          <div class="account-avatar-bg">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div>
+            <h2 class="account-title">Account Settings</h2>
+            <p class="account-email-display">Signed in as <strong id="account-email-display"></strong></p>
+          </div>
+        </div>
+
+        <div class="account-divider"></div>
+
+        <div class="account-section">
+          <h3 class="account-section-title">Update Email</h3>
+          <div class="form-field">
+            <label for="new-email">New Email Address</label>
+            <input id="new-email" type="email" placeholder="new@example.com">
+          </div>
+          <p id="email-update-msg" class="account-msg" aria-live="polite"></p>
+          <button id="update-email-btn" class="btn btn-primary">Save Email</button>
+        </div>
+
+        <div class="account-divider"></div>
+
+        <div class="account-section">
+          <h3 class="account-section-title">Pro Subscription</h3>
+          <div id="account-subscription-card" class="sub-card inactive">
+            <div class="sub-status-row">
+              <span class="sub-label">Status</span>
+              <span id="account-subscription-status" class="sub-badge">Inactive</span>
+            </div>
+            <div class="sub-grid">
+              <div class="sub-item">
+                <span class="sub-item-label">Months Left</span>
+                <strong id="account-months-left">0</strong>
+              </div>
+              <div class="sub-item">
+                <span class="sub-item-label">Next Payment Due</span>
+                <strong id="account-next-payment">N/A</strong>
+              </div>
+            </div>
+            <p id="account-subscription-note" class="account-msg">No active subscription.</p>
+            <div class="sub-actions">
+              <button id="account-start-trial-btn" class="btn btn-primary">Start 7-Day Free Trial</button>
+              <button id="account-cancel-sub-btn" class="btn btn-danger" style="display:none">Cancel Subscription</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="account-divider"></div>
+
+        <div class="account-section">
+          <h3 class="account-section-title">Change Password</h3>
+          <div class="form-field">
+            <label for="current-password">Current Password</label>
+            <input id="current-password" type="password" placeholder="••••••••">
+          </div>
+          <div class="form-field">
+            <label for="new-password">New Password</label>
+            <input id="new-password" type="password" placeholder="••••••••">
+          </div>
+          <p id="password-update-msg" class="account-msg" aria-live="polite"></p>
+          <button id="update-password-btn" class="btn btn-primary">Change Password</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── Tab: PRO ────────────────────────────────────────── -->
+    <div id="tab-pro" class="tab-panel" style="display:none">
+      <section class="panel pro-panel">
+        <div class="pro-header">
+          <div class="pro-badge-pill">PRO</div>
+          <h2 id="pro-title" class="pro-title">Pro Subscription Features</h2>
+          <p id="pro-subtitle" class="pro-subtitle">Access your exclusive content and premium features.</p>
+        </div>
+        <div class="account-divider"></div>
+        <div id="pro-trial-wall" class="pro-trial-wall" style="display:none">
+          <div class="trial-wall-copy">
+            <h3>Try Arcinity Pro free for 7 days</h3>
+            <p>See exactly what you unlock with Pro, then start your risk-free trial.</p>
+          </div>
+          <div id="pro-feature-preview" class="pro-feature-preview">
+            <ul class="pro-feature-list">
+              <li>Advanced Deep Learning algorithm for infinite scroll</li>
+              <li>Local AI Video Search</li>
+              <li>Music Recognition</li>
+              <li>Advanced recommendation engine</li>
+            </ul>
+            <button id="pro-begin-trial-btn" type="button" class="btn btn-primary">Begin Your 7 Day Free Trial</button>
+          </div>
+
+          <div id="pro-payment-screen" style="display:none">
+            <form id="pro-trial-form" class="stripe-form" novalidate>
+              <div class="form-field">
+                <label for="trial-name">Cardholder Name</label>
+                <input id="trial-name" type="text" placeholder="Jane Doe">
+              </div>
+              <div class="form-field">
+                <label for="trial-email">Billing Email</label>
+                <input id="trial-email" type="email" placeholder="you@example.com">
+              </div>
+              <div class="form-field">
+                <label for="trial-card">Card Number</label>
+                <input id="trial-card" type="text" inputmode="numeric" placeholder="4242 4242 4242 4242">
+              </div>
+              <div class="trial-form-row">
+                <div class="form-field">
+                  <label for="trial-exp">Exp</label>
+                  <input id="trial-exp" type="text" placeholder="MM/YY">
+                </div>
+                <div class="form-field">
+                  <label for="trial-cvc">CVC</label>
+                  <input id="trial-cvc" type="password" inputmode="numeric" placeholder="123">
+                </div>
+              </div>
+              <p class="stripe-disclaimer"><strong>After your 7-day free trial, your subscription is $4.99 USD/month and auto-renews each month unless canceled.</strong></p>
+              <p class="stripe-disclaimer">Secure payment powered by Stripe.</p>
+              <p id="pro-trial-msg" class="account-msg" aria-live="polite"></p>
+              <div class="sub-actions">
+                <button id="pro-start-trial-btn" type="submit" class="btn btn-primary">Start Free Trial</button>
+                <button id="pro-back-to-features-btn" type="button" class="btn btn-secondary">Back to Features</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="pro-courses-container">
+          <!-- Shown to signed-out users only -->
+          <p id="pro-signed-out-msg" class="pro-loading" style="display:none">Sign in to activate your free trial and unlock Pro.</p>
+
+          <!-- ── Deep Learning Catalog Indexer (Pro subscribers only) ── -->
+          <div id="pro-deeplearn-section" style="display:none">
+            <div class="panel deeplearn-panel">
+              <div class="deeplearn-header-row">
+                <div>
+                  <h2 class="deeplearn-title">🧠 Deep Learning Catalog Indexer</h2>
+                  <p class="deeplearn-sub">Build a comprehensive local AI index of your entire video library. Extracts speech transcripts, visual embeddings, and audio feature vectors for advanced semantic recommendations and search.</p>
+                  <p class="deeplearn-tips" style="font-size:0.85rem;color:#666;margin-top:8px">💡 <strong>Quick Start:</strong> Click "Check Dependencies" → select a quality preset → click "Scan Folder First" → "Start Indexing"</p>
+                </div>
+                <div id="dl-status-pill" class="dl-pill dl-pill-unknown">Not Indexed</div>
+              </div>
+
+              <!-- Catalog stats -->
+              <div id="dl-stats" class="dl-stats" style="display:none">
+                <div class="dl-stat">
+                  <span class="dl-stat-num" id="dl-total">0</span>
+                  <span class="dl-stat-label">Total Videos</span>
+                </div>
+                <div class="dl-stat-sep"></div>
+                <div class="dl-stat">
+                  <span class="dl-stat-num dl-num-good" id="dl-indexed">0</span>
+                  <span class="dl-stat-label">Indexed</span>
+                </div>
+                <div class="dl-stat-sep"></div>
+                <div class="dl-stat">
+                  <span class="dl-stat-num dl-num-warn" id="dl-pending">0</span>
+                  <span class="dl-stat-label">Pending</span>
+                </div>
+              </div>
+
+              <!-- ML engine dependency status -->
+              <div id="dl-dep-panel" class="dl-dep-panel" style="display:none">
+                <h3 class="dl-dep-title">ML Engine Status</h3>
+                <div class="dl-dep-grid">
+                  <div class="dl-dep-item">
+                    <span id="dl-dep-whisper-icon" class="dl-dep-icon dl-dep-unknown">&bull;</span>
+                    <span class="dl-dep-name">Speech-to-Text</span>
+                    <span id="dl-dep-whisper-label" class="dl-dep-label">faster-whisper / whisper</span>
+                  </div>
+                  <div class="dl-dep-item">
+                    <span id="dl-dep-visual-icon" class="dl-dep-icon dl-dep-unknown">&bull;</span>
+                    <span class="dl-dep-name">Visual Embeddings</span>
+                    <span id="dl-dep-visual-label" class="dl-dep-label">CLIP / MobileNetV3</span>
+                  </div>
+                  <div class="dl-dep-item">
+                    <span id="dl-dep-audio-icon" class="dl-dep-icon dl-dep-unknown">&bull;</span>
+                    <span class="dl-dep-name">Audio Analysis</span>
+                    <span id="dl-dep-audio-label" class="dl-dep-label">librosa / numpy</span>
+                  </div>
+                  <div class="dl-dep-item">
+                    <span id="dl-dep-python-icon" class="dl-dep-icon dl-dep-unknown">&bull;</span>
+                    <span class="dl-dep-name">Python Runtime</span>
+                    <span id="dl-dep-python-label" class="dl-dep-label">Checking&hellip;</span>
+                  </div>
+                </div>
+                <!-- pip install log (only shown while installing) -->
+                <pre id="dl-install-log" class="dl-install-log" style="display:none"></pre>
+              </div>
+
+              <!-- Progress bar -->
+              <div id="dl-progress-wrap" class="dl-progress-wrap" style="display:none">
+                <div class="thumbs-bar-bg">
+                  <div id="dl-progress-bar" class="thumbs-bar-fill" style="width:0%"></div>
+                </div>
+                <p id="dl-progress-text" class="thumbs-progress-text">Preparing&hellip;</p>
+                <p id="dl-stage-text" class="dl-stage-text"></p>
+              </div>
+
+              <!-- Actions -->
+              <div class="dl-actions">
+                <div id="dl-enhanced-mode-wrap" class="dl-enhanced-mode-wrap" style="display:none">
+                  <div class="dl-enhanced-mode-text">
+                    <div class="dl-enhanced-mode-title">AI Enhanced Algorithm</div>
+                    <p id="dl-enhanced-mode-note" class="dl-enhanced-mode-note">Uses indexed Deep Learning data instead of pseudo features for recommendations.</p>
+                  </div>
+                  <label class="dl-switch" for="dl-enhanced-mode-toggle" aria-label="Enable AI enhanced algorithm">
+                    <input id="dl-enhanced-mode-toggle" type="checkbox" />
+                    <span class="dl-slider" aria-hidden="true"></span>
+                  </label>
+                </div>
+
+                <div class="dl-quality-group">
+                  <span class="dl-quality-label">Quality Preset:</span>
+                  <button id="dl-quality-fast" class="btn btn-quality" data-quality="fast" title="⚡ Fast (5-10 sec/video): No speech recognition, basic color analysis. Best for quick previews.">Fast</button>
+                  <button id="dl-quality-balanced" class="btn btn-quality btn-quality-active" data-quality="balanced" title="⚖️  Balanced (30-50 sec/video, recommended): All features enabled. Good balance of speed and features.">Balanced</button>
+                  <button id="dl-quality-quality" class="btn btn-quality" data-quality="quality" title="🎬 Highest Quality (50+ sec/video): Full-resolution embeddings and detailed analysis. Best search results.">Highest Quality</button>
+                </div>
+                <div class="dl-action-buttons">
+                  <button id="dl-check-deps-btn" class="btn btn-secondary" title="Verify Python and ML libraries are installed. Shows your system specs and processing speed estimate.">Check Dependencies</button>
+                  <button id="dl-install-btn" class="btn btn-secondary" style="display:none" title="Auto-download video indexing libraries. Takes 2-5 min with GPU, ~10-15 min on CPU.">Install ML Packages</button>
+                  <button id="dl-reindex-btn" class="btn btn-ghost" style="display:none" title="Re-process all videos including ones already indexed. Use to switch quality presets.">Re-Index All</button>
+                  <button id="dl-run-btn" class="btn btn-primary" disabled title="Start video indexing with selected quality preset. You can cancel anytime.">Scan Folder First</button>
+                  <button id="dl-cancel-btn" class="btn btn-danger" style="display:none" title="Stop processing. Your progress is saved and will resume next time.">Cancel</button>
+                </div>
+              </div>
+              <p id="dl-message" class="message" aria-live="polite" style="margin-top:6px;min-height:1.2em"></p>
+            </div>
+
+            <div class="panel stream-settings-panel">
+              <div class="stream-settings-head">
+                <h2 class="deeplearn-title">📡 HLS Streaming Settings</h2>
+                <p class="deeplearn-sub">TikTok-style low-latency streaming: after the first video, feed playback uses HLS by default. Free users are capped at 540p. Pro users can remove the cap and tune segment length.</p>
+              </div>
+
+              <div class="stream-settings-grid">
+                <div class="form-field">
+                  <label for="stream-max-resolution">HLS Max Resolution</label>
+                  <select id="stream-max-resolution" class="stream-select">
+                    <option value="540">540p (Default)</option>
+                    <option value="720">720p</option>
+                    <option value="1080">1080p</option>
+                    <option value="none">No Max Resolution (Pro)</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="stream-fragment-seconds">Segment Length (seconds)</label>
+                  <input id="stream-fragment-seconds" type="number" min="1" max="12" step="1" value="2" />
+                </div>
+              </div>
+
+              <div class="stream-actions">
+                <button id="stream-apply-btn" class="btn btn-primary">Apply Streaming Settings</button>
+              </div>
+              <p id="stream-settings-message" class="message" aria-live="polite" style="min-height:1.2em"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- ── Auth Modal ──────────────────────────────────────── -->
+  <div id="auth-modal" class="modal-overlay" style="display:none" aria-modal="true" role="dialog" aria-label="Sign in or create account">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close">&times;</button>
+
+      <div class="modal-brand">
+        <p class="eyebrow" style="text-align:center;margin-bottom:4px;font-size:0.7rem">ARCINITY</p>
+        <h2 class="modal-title">Welcome Back</h2>
+        <p class="modal-subtitle">Sign in to unlock Account &amp; PRO features.</p>
+      </div>
+
+      <div class="modal-tab-row" role="tablist">
+        <button class="modal-tab active" data-mode="signin" role="tab">Sign In</button>
+        <button class="modal-tab" data-mode="signup" role="tab">Create Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signin-form" class="auth-form" autocomplete="on" novalidate>
+        <div class="form-field">
+          <label for="signin-email">Email</label>
+          <input id="signin-email" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-field">
+          <label for="signin-password">Password</label>
+          <input id="signin-password" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <p id="signin-error" class="auth-error" aria-live="polite"></p>
+        <button type="submit" class="btn btn-primary auth-submit" id="signin-submit-btn">Sign In</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="auth-form" style="display:none" autocomplete="on" novalidate>
+        <div class="form-field">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="form-field">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" type="password" placeholder="Create a password" autocomplete="new-password">
+        </div>
+        <p id="signup-error" class="auth-error" aria-live="polite"></p>
+        <button type="submit" class="btn btn-primary auth-submit" id="signup-submit-btn">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
+

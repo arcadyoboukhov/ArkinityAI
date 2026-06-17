@@ -1,0 +1,473 @@
+/* Fullscreen vertical feed */
+:root {
+    --accent: #ff2d55;
+    --muted: #aaa
+}
+
+body.enhanced-mode {
+    --accent: #3b82f6;
+}
+
+* {
+    box-sizing: border-box
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background: #000;
+    color: #fff;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+    overscroll-behavior: none;
+    overflow: hidden;
+    /* Prevent horizontal overflow on mobile browsers */
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+#feed {
+    /* Use dynamic viewport height when available, fallback to classic vh */
+    height: 100dvh;
+    height: 100vh;
+    /* Full width but constrained to an aspect-based max width */
+    width: 100%;
+    max-width: min(100vw, calc(100dvh * 9 / 16));
+    margin: 0 auto;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* GPU-composited layer for smooth mobile scrolling */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0)
+}
+#feed::-webkit-scrollbar { display: none; }
+
+.post {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+/* Ensure thumbnail and video always fully cover the post area to avoid black bars */
+.post video,
+.post .thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #000;
+}
+
+.post video { z-index: 0; transition: opacity 300ms ease; opacity: 1; will-change: transform; }
+.post .thumb { z-index: 1; transition: opacity 300ms ease; }
+
+.post .overlay { z-index: 2; }
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none
+}
+
+.meta {
+    position: absolute;
+    left: 16px;
+    bottom: 32px;
+    max-width: 65%;
+    pointer-events: auto
+}
+
+.meta .user {
+    font-weight: 700;
+    margin-bottom: 8px
+}
+
+.meta .caption {
+    margin-bottom: 8px;
+    color: var(--muted)
+}
+
+.meta .music {
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+    gap: 8px
+}
+
+.actions {
+    position: absolute;
+    right: 12px;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    pointer-events: auto
+}
+
+.action {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer
+}
+
+.action svg {
+    width: 26px;
+    height: 26px
+}
+
+.profile-btn {
+    background: transparent;
+    border: 2px solid rgba(200, 200, 200, 0.7);
+}
+
+.profile-btn.active-filter {
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.like-count {
+    font-size: 12px;
+    text-align: center;
+    color: var(--muted)
+}
+
+.music-disc {
+    position: absolute;
+    right: 14px;
+    bottom: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #666, #333);
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.liked {
+    color: var(--accent);
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6))
+}
+
+.like-btn {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.like-btn.like-pop {
+    animation: likePop 220ms ease-out;
+}
+
+.like-burst {
+    position: absolute;
+    transform: translate(-50%, -50%) scale(0.45);
+    font-size: 64px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 4;
+    text-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --dx: 0px;
+    --dy: -80px;
+    --delay: 0ms;
+    --scale: 1;
+}
+
+.like-burst.show {
+    animation: burstHeart 680ms cubic-bezier(.18, .8, .25, 1) forwards;
+    animation-delay: var(--delay);
+}
+
+.comments-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 58%;
+    max-height: 100%;
+    background: rgba(12, 12, 12, 0.95);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    transform: translateY(104%);
+    transition: transform 220ms ease;
+    pointer-events: auto;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.comments-panel.open {
+    transform: translateY(0);
+}
+
+.comments-header {
+    padding: 14px 16px;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.comments-list {
+    overflow-y: auto;
+    padding: 10px 12px 18px;
+}
+
+.comment-row {
+    padding: 9px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    margin-bottom: 8px;
+}
+
+.comment-user {
+    font-size: 12px;
+    color: #d8d8d8;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.comment-text {
+    font-size: 13px;
+    color: #f3f3f3;
+    word-break: break-word;
+}
+
+.tap-unpause-btn {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.96);
+    z-index: 20;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    background: linear-gradient(160deg, rgba(18, 18, 18, 0.92), rgba(48, 48, 48, 0.82));
+    color: #fff;
+    border-radius: 999px;
+    padding: 12px 22px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.tap-unpause-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.tap-unpause-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.16);
+    font-size: 13px;
+}
+
+@keyframes likePop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.22); }
+    100% { transform: scale(1); }
+}
+
+@keyframes burstHeart {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(calc(0.45 * var(--scale))); }
+    15% { opacity: 1; transform: translate(calc(-50% + var(--dx) * 0.18), calc(-50% + var(--dy) * 0.15)) scale(calc(1.05 * var(--scale))); }
+    70% { opacity: 1; transform: translate(calc(-50% + var(--dx) * 0.8), calc(-50% + var(--dy) * 0.85)) scale(calc(0.95 * var(--scale))); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(calc(1.15 * var(--scale))); }
+}
+
+/* sentinel (loader) should not affect layout */
+#sentinel { height: 1px; width: 1px; pointer-events: none; opacity: 0; }
+
+/* ── Back button ─────────────────────────────────────────────────────────── */
+#back-btn {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px 0 10px;
+    height: 34px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255, 255, 255, 0.16);
+    border-radius: 17px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+    cursor: pointer;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease, background 150ms ease, border-color 150ms ease;
+    white-space: nowrap;
+    max-width: calc(min(calc(100vw - 24px), calc(100dvh * 9 / 16 - 24px)) / 2 - 8px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translateY(-8px);
+}
+
+#back-btn svg {
+    flex-shrink: 0;
+    stroke: rgba(255, 255, 255, 0.75);
+    transition: stroke 150ms ease;
+}
+
+#back-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#back-btn.back-btn--visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+#back-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+#back-btn:hover svg {
+    stroke: #fff;
+}
+
+#back-btn:active {
+    transform: translateY(0) scale(0.96);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Search bar ──────────────────────────────────────────────────────────── */
+.search-bar {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 24px), calc(100dvh * 9 / 16 - 24px));
+    height: 42px;
+    background: rgba(0, 0, 0, 0.52);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 21px;
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 8px;
+    z-index: 10;
+    pointer-events: auto;
+    transition: border-color 180ms ease;
+}
+
+.search-bar--locked {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.search-bar--active {
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.search-bar__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-bar__icon svg {
+    width: 17px;
+    height: 17px;
+}
+
+.search-bar__input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    min-width: 0;
+}
+
+.search-bar__input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.search-bar__input:disabled {
+    cursor: default;
+    pointer-events: none;
+}
+
+.search-bar__locked-label {
+    flex: 1;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Mobile-specific overrides: ensure full-bleed feed and viewport-fitting posts */
+@media (max-width: 900px) {
+    #feed {
+        width: 100vw;
+        max-width: 100vw;
+        height: 100dvh;
+        height: 100vh;
+    }
+
+    .post {
+        height: 100dvh;
+        height: 100vh;
+        min-height: 100vh;
+    }
+
+    /* Center and constrain top controls to viewport width on small screens */
+    #back-btn, .search-bar {
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: calc(100vw - 24px);
+        width: calc(100vw - 24px);
+    }
+}

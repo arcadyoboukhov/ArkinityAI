@@ -1,0 +1,75 @@
+{
+  "name": "arcinity",
+  "version": "1.0.1",
+  "description": "Arcinity desktop video feed with Electron launcher",
+  "author": "Arcinity",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "launcher": "electron .",
+    "build:exe": "electron-builder --win nsis",
+    "build:dmg": "electron-builder --mac dmg",
+    "build:mac": "electron-builder --mac",
+    "build:linux:dir": "electron-builder --linux dir",
+    "build:flatpak": "npm run build:linux:dir && flatpak-builder --force-clean --repo=flatpak/repo flatpak/build flatpak/com.arcinity.launcher.yml",
+    "bundle:flatpak": "flatpak build-bundle flatpak/repo dist/Arcinity.flatpak com.arcinity.launcher"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ffmpeg-static": "^5.2.0"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "nodemon": "^2.0.22",
+    "png-to-ico": "^3.0.1"
+  },
+  "build": {
+    "appId": "com.arcinity.launcher",
+    "productName": "Arcinity",
+    "icon": "build/icons/app.ico",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "app.js",
+      "config.js",
+      "index.html",
+      "styles.css",
+      "server.js",
+      "recommender.js",
+      "catagorize.py",
+      "electron/**/*",
+      "data/**/*",
+      "scripts/**/*",
+      "thumbs/**/*"
+    ],
+    "asarUnpack": [
+      "scripts/**/*",
+      "node_modules/ffmpeg-static/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icons/app.ico"
+    },
+    "nsis": {
+      "installerIcon": "build/icons/app.ico",
+      "uninstallerIcon": "build/icons/app.ico",
+      "deleteAppDataOnUninstall": false
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.video"
+    },
+    "linux": {
+      "target": [
+        "dir"
+      ],
+      "category": "AudioVideo"
+    }
+  }
+}
+

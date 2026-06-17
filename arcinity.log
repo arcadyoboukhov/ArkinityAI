@@ -1,0 +1,4 @@
+[LOG] Server listening on http://localhost:3000
+[LOG] Recommendation mode: Basic
+[LOG] Loaded persistent state: recent= 2231 behavior= 708
+[INFO] [likes] LIKES_PATH C:\Users\Admin\Documents\Arkinity\data\likes.json
